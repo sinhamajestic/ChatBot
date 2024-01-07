@@ -1,5 +1,4 @@
 package frontend;
-
 import backend.Answer;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,9 +9,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class Server {
-
     private static DataInputStream dis;
     private static DataOutputStream dos;
     private static ServerSocket ss;
@@ -33,7 +30,6 @@ public class Server {
                 String category;
                 Answer answer = new Answer();
                 ArrayList<Answer> list = answer.filterAsk(message);
-                
                 if (message.equalsIgnoreCase("/quit")) {
                     System.out.println("Application Stopped");
                     System.exit(0);

@@ -1,5 +1,4 @@
 package frontend;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -62,7 +61,7 @@ public class Client extends Application {
             dis = new DataInputStream(socket.getInputStream());
             dos = new DataOutputStream(socket.getOutputStream());
         } catch (IOException e) {
-            Logger.getLogger(client.class.getName()).log(Level.SEVERE, null, e);
+      //      Logger.getLogger(client.class.getName()).log(Level.SEVERE, null, e);
         }
 
         chatInput.setOnKeyPressed(keyEvent -> {
@@ -76,14 +75,17 @@ public class Client extends Application {
         String message = chatInput.getText().trim();
         if (!message.isEmpty()) {
             try {
+                // Send message to Python script and get response
+                String pythonResponse = executePythonScript(message);
+                
                 dos.writeUTF(message);
-                if (message.equalsIgnoreCase("/quit")) {
+                if (message.equalsIgnoreCase("quit")) {
                     System.out.println("App has been terminated");
                     System.exit(0);
                 } else {
                     String botResponse = dis.readUTF();
                     Platform.runLater(() -> {
-                        chatArea.appendText("You: " + message + "\n" + botResponse + "\n");
+                        chatArea.appendText("You: " + message + "\n" + botResponse + "\nPython AI: " + pythonResponse + "\n");
                         chatInput.clear();
                     });
                 }
@@ -92,6 +94,22 @@ public class Client extends Application {
             }
         } else {
             chatArea.appendText("\nBot: You cannot enter an empty message\n");
+        }
+    }
+
+    private String executePythonScript(String input) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("python", "path_to_your_script.py", input);
+            Process p = pb.start();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String output = in.readLine();
+
+            in.close();
+            return output;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error executing Python script";
         }
     }
 }
